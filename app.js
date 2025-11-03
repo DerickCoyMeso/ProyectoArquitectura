@@ -2,6 +2,7 @@ const express = require('express')
 require('dotenv').config()
 const sequelize = require('./db/db')
 
+// Importar rutas
 const rolRoutes = require('./routes/rol.routes')
 const usuarioRoutes = require('./routes/usuario.routes')
 const sesionRoutes = require('./routes/sesion.routes')
@@ -21,6 +22,14 @@ const pagoRoutes = require('./routes/pago.routes')
 const app = express()
 app.use(express.json())
 
+// Ruta base (prueba rápida para Railway)
+app.get('/', (req, res) => {
+  res.json({
+    message: 'API Inventario de Tecnología funcionando correctamente',
+    environment: process.env.RAILWAY_ENVIRONMENT_NAME || 'local'
+  })
+})
+
 app.use('/api', rolRoutes)
 app.use('/api', usuarioRoutes)
 app.use('/api', sesionRoutes)
@@ -37,14 +46,19 @@ app.use('/api', detalleVentaRoutes)
 app.use('/api', metodoPagoRoutes)
 app.use('/api', pagoRoutes)
 
-
 const PORT = process.env.PORT || 3000
 
-sequelize.sync().then(() => {
-  app.listen(PORT, () => {
-    console.log(`Base de datos conectada`)
-    console.log(`Servidor ejecutándose en el puerto ${PORT}`)
+//Intentar conectar con la base de datos y luego levantar el servidor
+sequelize.authenticate()
+  .then(() => {
+    console.log('Conectado correctamente a la base de datos')
+    return sequelize.sync()
   })
-}).catch(err => {
-  console.error('Error al conectar la base de datos:', err)
-})
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Servidor ejecutándose en el puerto ${PORT}`)
+    })
+  })
+  .catch(err => {
+    console.error('Error al conectar la base de datos:', err.message)
+  })
