@@ -3,22 +3,25 @@ const db = require('../db/db')
 
 const Pago = db.define('Pago', {
   id: {
-    type: DataTypes.CHAR(36),
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
     primaryKey: true
   },
   venta_id: {
-    type: DataTypes.CHAR(36),
+    type: DataTypes.INTEGER,
     allowNull: false
   },
   metodo_pago_id: {
-    type: DataTypes.CHAR(36)
+    type: DataTypes.INTEGER,
+    allowNull: false
   },
   monto: {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: false
   },
   fecha: {
-    type: DataTypes.DATE
+    type: DataTypes.DATE,
+    allowNull: false
   },
   referencia: {
     type: DataTypes.STRING(100)
